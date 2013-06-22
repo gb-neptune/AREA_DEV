@@ -15,3 +15,4 @@ The COI is a regional initiative conceptualized by a community of Caribbean stak
 
 ### The Institute Of Development Studies (IDS)
 The IDS is a leading global charity for international development research, teaching and communications.The IDS Knowledge Services Open API provides access to tens of thousands of thematically organised resources, primarily academic research, on development issues 
+
