@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,12 +13,22 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
+
 /**HomeActivity
  *
  *DESC:		Main application activity. 
  */
 public class HomeActivity extends BaseActivity {
 	private static final String TAG = HomeActivity.class.getSimpleName();
+	
+	//Class instance variables used to track app and screen activity to send google analytics
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
+	
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +47,9 @@ public class HomeActivity extends BaseActivity {
 		// area.areaService.genericSearch(IDS_SEARCH, "TX.VAL.AGRI.ZS.UN", new
 		// String[]{"Jamaica", "Kenya","Barbados"});
 		// }
+		
+	    mGaInstance = GoogleAnalytics.getInstance(this);
+	    mGaTracker = mGaInstance.getTracker(this.getString(R.string.google_tracking_id));
 	}
 
 	@Override
@@ -66,11 +80,21 @@ public class HomeActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_prefs:
-			startActivity(new Intent(HomeActivity.this,
-					AreaPreferencesActivity.class));
+			//Send Google Analytics ui event
+			mGaTracker.sendEvent(this.getString(R.string.analytics_catergory_menu_action), 
+								 this.getString(R.string.analytics_action_menu_option), 
+								 this.getString(R.string.analytics_label_prefrence),
+								 (long)01);
+			startActivity(new Intent(HomeActivity.this,AreaPreferencesActivity.class));	
 			break;
 		case R.id.menu_startup:
-			startActivity(new Intent(HomeActivity.this, StartupActivity.class));
+			//Send Google Analytics ui event
+			mGaTracker.sendEvent(this.getString(R.string.analytics_catergory_menu_action), 
+								 this.getString(R.string.analytics_action_menu_option),
+								 this.getString(R.string.analytics_label_startup),
+								 (long)01);
+			startActivity(new Intent(HomeActivity.this, StartupActivity.class));			
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -96,7 +120,20 @@ public class HomeActivity extends BaseActivity {
 		else {	//Startup Failed
 			Toast.makeText(HomeActivity.this, "There was an error running the application initialization. Please try again.", Toast.LENGTH_SHORT).show();
 		}
-
+	}
+	
+	//Adding google analytics tracking feature to this activity
+	@Override
+	public void onStart(){
+		super.onStart();
+		EasyTracker.getInstance().setContext(this);		
+		mGaTracker.sendView(this.getString(R.string.analytics_screen_home));
+	}
+	
+	@Override
+	public void onStop(){
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
 	}
 
 }

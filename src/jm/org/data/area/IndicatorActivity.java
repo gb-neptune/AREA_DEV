@@ -23,6 +23,11 @@ import static jm.org.data.area.DBConstants.WB_INDICATOR_ID;
 
 import java.util.ArrayList;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GAServiceManager;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
+
 import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -56,11 +61,17 @@ public class IndicatorActivity extends BaseActivity implements
 	final String POSITION = "position";
 	private int mListPosition;
 	private ProgressDialog dialog;
+	
+	//Class instance variables used to track app and screen activity to send google analytics
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		mGaInstance = GoogleAnalytics.getInstance(this);
+	    mGaTracker = mGaInstance.getTracker(this.getString(R.string.google_tracking_id));
+	    
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			// only for android newer than gingerbread
 			 //ActionBar actionBar = getActionBar();
@@ -326,5 +337,20 @@ public class IndicatorActivity extends BaseActivity implements
 		
 		//Log.d(TAG, "Current tab is " + mTabHost.getCurrentTab());
 	}
+	//Adding google analytics tracking feature to this activity
+	@Override
+	public void onStart(){
+		super.onStart();
+		EasyTracker.getInstance().setContext(this);		
+		mGaTracker.sendView(this.getString(R.string.analytics_screen_indicator));
+		GAServiceManager.getInstance().dispatch();
+	}
+	
+	@Override
+	public void onStop(){
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
+
 
 }

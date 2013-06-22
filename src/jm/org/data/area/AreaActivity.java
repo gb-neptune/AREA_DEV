@@ -17,6 +17,9 @@ import android.widget.Toast;
 import static jm.org.data.area.AreaConstants.WORLD_SEARCH;
 
 import com.android.actionbarcompat.ActionBarActivity;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
+
 import jm.org.data.area.R;
 
 
@@ -30,6 +33,10 @@ public class AreaActivity extends ActionBarActivity {
 	String bingKey;
 	
 	Button btnInvokeSearch;
+	
+	//Class instance variables used to track app and screen activity to send google analytics
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
 
 	
     @Override

@@ -23,6 +23,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
+
 public class ReportWebViewActivity extends BaseActivity 
 {
 	
@@ -35,6 +39,10 @@ public class ReportWebViewActivity extends BaseActivity
 	private AreaApplication area;
 	private String appPath;
 	/** Called when the activity is first created. */
+	
+	//Class instance variables used to track app and screen activity to send google analytics
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
     
 	@Override
     public void onCreate(Bundle savedInstanceState)   
@@ -43,6 +51,10 @@ public class ReportWebViewActivity extends BaseActivity
         setContentView(R.layout.report_pdf_view);
         appPath = getPath();
         Log.e(TAG, "Path => " + appPath);
+        
+        mGaInstance = GoogleAnalytics.getInstance(this);
+		mGaTracker = mGaInstance.getTracker(this.getString(R.string.google_tracking_id));
+        
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			// only for android newer than gingerbread
 			 ActionBar actionBar = getActionBar();
@@ -77,6 +89,20 @@ public class ReportWebViewActivity extends BaseActivity
 		
 		
     }
+	//Adding google analytics tracking feature to this activity
+	@Override
+	public void onStart(){
+		super.onStart();
+		EasyTracker.getInstance().setContext(this);		
+		mGaTracker.sendView(this.getString(R.string.analytics_screen_article_viewer));
+	}
+	
+	@Override
+	public void onStop(){
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
+		
 	
 
 	
@@ -175,6 +201,7 @@ public class ReportWebViewActivity extends BaseActivity
 			
 		}
 		
+		
 	}
     
     private void displayPDF(String pdfurl){
@@ -229,4 +256,5 @@ public class ReportWebViewActivity extends BaseActivity
 		
     	return storage;
     }
+    
 }

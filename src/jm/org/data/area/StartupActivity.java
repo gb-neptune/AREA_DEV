@@ -1,13 +1,18 @@
 package jm.org.data.area;
 
-import static jm.org.data.area.AreaConstants.WORLD_SEARCH;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 import android.widget.ViewAnimator;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GAServiceManager;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 
 /**
  *  DESC: Called when the Area application is first created. Activity downloads initial indicator names
@@ -23,7 +28,11 @@ public class StartupActivity extends Activity {
 
 	private AreaApplication area;
 	private ViewAnimator loadingAnimator;
-
+	
+	//Class instance variables used to track app and screen activity to send google analytics
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +40,12 @@ public class StartupActivity extends Activity {
 		setContentView(R.layout.startupview);
 		loadingAnimator = (ViewAnimator)findViewById(R.id.startupSwitcher);	//Loading Animator
 		area = (AreaApplication) getApplication();
+		
+		//google analytics tracking 
+		mGaInstance = GoogleAnalytics.getInstance(this);
+	    mGaTracker = mGaInstance.getTracker(getResources().getString(R.string.google_tracking_id));
+	    
+	   
 
 		if (!area.checkNetworkConnection()) {	//Check the Internet connection
 			Log.e(TAG, "No Internet connectivity");
@@ -45,8 +60,12 @@ public class StartupActivity extends Activity {
 	}
 
 	private class startupRequest extends AsyncTask<Void, Void, Boolean> {
-
+		private long startTime;
+		private long elapsedTime;
 		protected void onPreExecute() {
+			//set the current time before executing start up services			
+			startTime = System.currentTimeMillis();
+			
 			loadingAnimator.setDisplayedChild(0);
 			area.initIsRunning = true;
 		}
@@ -93,13 +112,27 @@ public class StartupActivity extends Activity {
 								Toast.LENGTH_LONG).show();
 				*/
 			}
+			elapsedTime = System.currentTimeMillis()- startTime;
+			mGaTracker.sendTiming("resources", elapsedTime, "setup_time", null);
+			GAServiceManager.getInstance().dispatch();
 		}
 	}
 
+	//Adding google analytics tracking feature to this activity
 	@Override
-	protected void onPause() {
-		super.onPause();
+	public void onStart(){
+		super.onStart();
+		EasyTracker.getInstance().setContext(this);		
+		mGaTracker.sendView(this.getString(R.string.analytics_screen_startup));
+		GAServiceManager.getInstance().dispatch();
 	}
+	
+	@Override
+	public void onStop(){
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
+
 
 	/*
 	 * // TODO: default with 0 specify constants for apis

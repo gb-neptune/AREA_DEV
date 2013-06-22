@@ -14,7 +14,8 @@
   limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+tools:ignore="TypographyDashes" >
     <string name="app_name">A.R.E.A</string>
     <string name="alternate_title">Agriculture Research Evidence Application</string>
     <string name="toggle_title">Toggle title</string>
@@ -66,4 +67,32 @@
     <string name="search_hint">Search for articles or reports</string>
     <string name="menu_reload">Reload</string>
     <string name="test">Tap to Add Country/Region/Income Level</string>
+    
+    <!-- Google Analytics Tracking ID for AREA (change this ID to update tracking) -->
+    <string name="google_tracking_id">UA-41912910-1</string>
+    
+    <!-- 
+    The following is responsible for the all data sent to Google Analytics For All event tracking.
+    Look at the refrence categories on the Google Analytics website and add events to the following
+    categories
+     -->
+    <!-- Google Analytics Event Categories -->
+    <string name="analytics_catergory_menu_action">Menu_Action</string>
+    
+    <!-- Google Analytics Event Action Categories -->
+    <string name="analytics_action_menu_option">Menu_Option</string>
+    
+    <!-- Google Analytics Even Label -->
+    <string name="analytics_label_startup">startup</string>
+    <string name="analytics_label_prefrence">prefrence</string>
+    
+    <!-- Google Analytics Screen Names -->
+    <string name="analytics_screen_home">/Home</string>
+    <string name="analytics_screen_startup">/Home/Startup</string>
+    <string name="analytics_screen_prefrence">/Prefrence</string>
+    <string name="analytics_screen_indicator">/Indicator</string>
+    <string name="analytics_screen_article_viewer">/Article Viewer</string>
+    <string name="analytics_screen_report_detail_viewer">/Report Detail Viewer</string>
+    <string name="analytics_screen_report_web_viewer">/Report Detail Viewer</string>
+    <string name="analytics_screen_search">/Search Activity</string>
 </resources>

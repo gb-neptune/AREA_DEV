@@ -6,8 +6,18 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GAServiceManager;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
 
 public class AreaPreferencesActivity extends PreferenceActivity {
+	//Class instance variables used to track app and screen activity to send google analytics
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -16,6 +26,9 @@ public class AreaPreferencesActivity extends PreferenceActivity {
 		Preference startupPreference = findPreference(getString(R.string.pref_startupKey));
 		PreferenceScreen preferenceScreen = getPreferenceScreen();
 		preferenceScreen.removePreference(startupPreference);
+		
+		mGaInstance = GoogleAnalytics.getInstance(this);
+	    mGaTracker = mGaInstance.getTracker(this.getString(R.string.google_tracking_id));
 	}
 	
 	@Override
@@ -28,6 +41,25 @@ public class AreaPreferencesActivity extends PreferenceActivity {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	//Adding google analytics tracking feature to this activity
+	@Override
+	public void onStart(){
+		super.onStart();
+		EasyTracker.getInstance().setContext(this);		
+		mGaTracker.sendView(this.getString(R.string.analytics_screen_prefrence));
+		GAServiceManager.getInstance().dispatch();
+		Toast.makeText(this, "Dispatch Complete",5).show();
+	}
+	@Override
+	public void onPause(){
+		super.onPause();
+		EasyTracker.getInstance().activityStop(this);
+	}
+	@Override
+	public void onStop(){
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
 	}
 
 }

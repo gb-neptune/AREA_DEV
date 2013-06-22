@@ -3,7 +3,6 @@
  */
 package jm.org.data.area;
 
-import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Build;
@@ -12,6 +11,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.google.analytics.tracking.android.Tracker;
+
 /**
  * @author Earl
  *
@@ -19,6 +22,10 @@ import android.widget.TextView;
 public class SearchableActivity extends BaseActivity {
 	public final String TAG = getClass().getSimpleName();
 	private String globalSearchString = "";
+	
+	//Class instance variables used to track app and screen activity to send google analytics
+	private Tracker mGaTracker;
+	private GoogleAnalytics mGaInstance;
 	
     // UI elements
     TextView mQueryText;
@@ -33,6 +40,9 @@ public class SearchableActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mGaInstance = GoogleAnalytics.getInstance(this);
+		mGaTracker = mGaInstance.getTracker(this.getString(R.string.google_tracking_id));
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			// only for android newer than gingerbread
@@ -129,6 +139,20 @@ public class SearchableActivity extends BaseActivity {
         mDeliveredByText.setText(entryPoint);
     }
     
+  //Adding google analytics tracking feature to this activity
+  	@Override
+  	public void onStart(){
+  		super.onStart();
+  		EasyTracker.getInstance().setContext(this);		
+  		mGaTracker.sendView(this.getString(R.string.analytics_screen_search));
+  	}
+  	
+  	@Override
+  	public void onStop(){
+  		super.onStop();
+  		EasyTracker.getInstance().activityStop(this);
+  	}
+  	
     
 
 }
